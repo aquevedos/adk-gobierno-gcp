@@ -1,0 +1,61 @@
+# ==============================================================================
+# ☁️ GOOGLE CLOUD BUILD CI/CD PIPELINE - AGENTIC DATA GOVERNANCE HUB
+# ==============================================================================
+# Despliegue declarativo y automatizado en Google Cloud Run
+#
+# Para ejecutar manualmente este pipeline:
+#   gcloud builds submit --config=cloudbuild.yaml --substitutions=_SERVICE_NAME=gobierno-datos-agent,_REGION=us-central1
+# ==============================================================================
+
+steps:
+  # Paso 1: Construir la imagen Docker usando el Dockerfile optimizado
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO_NAME}/${_SERVICE_NAME}:$BUILD_ID'
+      - '-t'
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO_NAME}/${_SERVICE_NAME}:latest'
+      - '.'
+    id: 'build-image'
+
+  # Paso 2: Publicar los tags de la imagen en Google Cloud Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - '--all-tags'
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO_NAME}/${_SERVICE_NAME}'
+    id: 'push-image'
+
+  # Paso 3: Desplegar la imagen en Google Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - '${_SERVICE_NAME}'
+      - '--image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO_NAME}/${_SERVICE_NAME}:$BUILD_ID'
+      - '--region=${_REGION}'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--memory=2Gi'
+      - '--cpu=2'
+      - '--concurrency=80'
+      - '--timeout=300'
+      - '--min-instances=0'
+      - '--max-instances=10'
+      - '--port=8080'
+      - '--set-env-vars=GCP_HOST_PROJECT_ID=$PROJECT_ID,GCP_LOCATION=${_REGION},GCP_GOVERNED_PROJECTS=$PROJECT_ID,GCP_CREDENTIALS_TYPE=ADC,HOST=0.0.0.0'
+    id: 'deploy-cloud-run'
+
+substitutions:
+  _REGION: 'us-central1'
+  _SERVICE_NAME: 'gobierno-datos-agent'
+  _REPO_NAME: 'gcf-artifacts'
+
+images:
+  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO_NAME}/${_SERVICE_NAME}:$BUILD_ID'
+  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO_NAME}/${_SERVICE_NAME}:latest'
+
+options:
+  logging: CLOUD_LOGGING_ONLY

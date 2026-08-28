@@ -1,0 +1,55 @@
+aws:
+  enabled: false
+  glue_catalog_id: '123456789012'
+  redshift_cluster_id: dw-enterprise-prod
+  redshift_database: dw_enterprise_prod
+  region: us-east-1
+  s3_governed_buckets:
+  - corp-ecommerce-raw
+  - corp-analytics-export
+azure:
+  adls_gen2_account: adlsenterpriselake
+  enabled: false
+  purview_account: purview-governance-hub
+  synapse_workspace: synapse-enterprise-workspace
+  tenant_id: tenant-uuid-placeholder
+gcp:
+  bigquery_datasets:
+  - chicago_taxi_trips
+  - costos
+  credentials_type: APPLICATION_DEFAULT_CREDENTIALS
+  dataplex_lake: enterprise-data-lake
+  dlp_inspection_template: projects/agente-newyork/locations/global/inspectTemplates/default-pii-template
+  enabled: true
+  location: us-central1
+  project_id: gobiernodatos
+onprem:
+  enabled: true
+  mysql:
+    connected: true
+    database: bdcomercial
+    host: mysql-1c645071-google-beed.j.aivencloud.com
+    port: 10283
+    user: avnadmin
+  oracle:
+    host: 10.0.1.60
+    port: 1521
+    service_name: ORCL_ERP
+  postgresql:
+    connected: true
+    database: bdanita
+    host: 34.71.91.85
+    port: 5432
+    schema: bdanita
+    user: postgres
+saas:
+  enabled: false
+  salesforce:
+    instance_url: https://empresa.my.salesforce.com
+    objects:
+    - Contact
+    - Account
+    - Lead
+  sap:
+    client: '100'
+    system_id: PRD

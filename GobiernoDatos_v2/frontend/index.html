@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agentic Data Governance Hub | Multi-Cloud & Hybrid</title>
+  <meta name="description" content="Plataforma de Gobierno de Datos Agéntico Multi-Cloud con Knowledge Catalog, Dataplex, Cloud DLP y 4 Perfiles Especializados">
+  
+  <!-- Google Fonts Outfit & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/style.css?v=30.0">
+  
+  <!-- Google Identity Services SDK para Google OAuth 2.0 -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  
+  <!-- Flatpickr CSS & JS para Date Range Picker Interactivo -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+
+  <!-- Chart.js & Vega-Lite para Gráficos Interactivos de BigQuery Studio (Líneas, Barras y Donut) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       VENTANA DE LOGIN (ROLE-BASED PORTAL PASTEL)
+       ========================================================================== -->
+  <div id="login-overlay" class="login-overlay" style="display: flex;">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-icon">🌐</div>
+        <h2 class="login-title">Agentic Data Governance Hub</h2>
+        <p class="login-subtitle">Selecciona tu Rol de Gobierno o ingresa con tu correo corporativo.</p>
+      </div>
+
+      <div>
+        <div class="role-selector-title">Acceso Rápido por Rol:</div>
+        <div class="roles-grid">
+          <button type="button" class="role-option-btn" data-email="cdo@empresa.com" onclick="quickSelectLoginRole('cdo@empresa.com', '123', 'CDO')">
+            <span class="role-avatar">👔</span>
+            <div>
+              <div class="role-name">El Estratega</div>
+              <div class="role-desc">CDO / Valor & ROI</div>
+            </div>
+          </button>
+
+          <button type="button" class="role-option-btn" data-email="governance@empresa.com" onclick="quickSelectLoginRole('governance@empresa.com', '123', 'Agile Lead')">
+            <span class="role-avatar">📋</span>
+            <div>
+              <div class="role-name">El Gestor</div>
+              <div class="role-desc">Agile Lead / RACI</div>
+            </div>
+          </button>
+
+          <button type="button" class="role-option-btn selected" data-email="steward@empresa.com" onclick="quickSelectLoginRole('steward@empresa.com', '123', 'Data Steward')">
+            <span class="role-avatar">🛡️</span>
+            <div>
+              <div class="role-name">El Guardián</div>
+              <div class="role-desc">Steward / Calidad / DLP</div>
+            </div>
+          </button>
+
+          <button type="button" class="role-option-btn" data-email="architect@empresa.com" onclick="quickSelectLoginRole('architect@empresa.com', '123', 'Lead Data Architect')">
+            <span class="role-avatar">🏗️</span>
+            <div>
+              <div class="role-name">El Arquitecto</div>
+              <div class="role-desc">Ingeniero / DB / Linaje</div>
+            </div>
+          </button>
+
+          <button type="button" class="role-option-btn" data-email="billing@empresa.com" onclick="quickSelectLoginRole('billing@empresa.com', '123', 'FinOps Lead')">
+            <span class="role-avatar">💳</span>
+            <div>
+              <div class="role-name">El Administrador</div>
+              <div class="role-desc">Billing / Cuotas & FinOps</div>
+            </div>
+          </button>
+
+        </div>
+      </div>
+
+      <form id="login-form" style="display: flex; flex-direction: column; gap: 0.85rem;">
+        <div class="form-group">
+          <label class="form-label" for="login-email">Correo Corporativo:</label>
+          <input type="email" id="login-email" class="form-input" value="steward@empresa.com" required placeholder="tu.correo@empresa.com">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="login-password">Contraseña:</label>
+          <input type="password" id="login-password" class="form-input" value="123" required placeholder="••••••••">
+        </div>
+
+        <div style="font-size: 0.75rem; color: var(--text-muted); background: var(--bg-app); padding: 0.5rem 0.75rem; border-radius: var(--radius-sm);">
+          💡 <em>Contraseña demo para todos los roles: <code>123</code></em>
+        </div>
+
+        <button type="submit" class="btn-login">
+          <span>Ingresar a mi Espacio de Trabajo</span>
+          <span>➔</span>
+        </button>
+
+        <!-- Contenedor Real de Google OAuth 2.0 (GSI) & Acceso Directo -->
+        <div style="margin: 0.5rem 0 0 0; text-align: center;">
+          <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+            <div style="flex: 1; height: 1px; background: rgba(0,0,0,0.1);"></div>
+            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">O AUTENTÍCATE CON GOOGLE OAUTH</span>
+            <div style="flex: 1; height: 1px; background: rgba(0,0,0,0.1);"></div>
+          </div>
+          
+          <div style="display: flex; justify-content: center; width: 100%; min-height: 44px;">
+            <div id="google-signin-btn-container"></div>
+          </div>
+          
+          <div id="google-signin-fallback-msg" style="font-size: 0.65rem; color: var(--text-muted); margin-top: 0.4rem;">
+            Cargando configuración de OAuth...
+          </div>
+
+          <!-- Botón de Acceso Directo Google Cloud -->
+          <button type="button" class="btn-secondary" onclick="triggerGoogleDirectAuth()" style="width: 100%; margin-top: 0.65rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: var(--pastel-blue-bg); border: 1.5px solid var(--pastel-blue-border); color: var(--pastel-blue-text); font-weight: 700; font-size: 0.82rem; padding: 0.55rem; border-radius: var(--radius-sm); transition: all 0.2s ease;">
+            <span>☁️</span> Iniciar con Cuenta de Google (Acceso Directo)
+          </button>
+
+          <!-- Ayuda de Acceso colapsable (opcional y limpia) -->
+          <details style="margin-top: 0.75rem; text-align: left; font-size: 0.72rem; color: var(--text-muted);">
+            <summary style="cursor: pointer; font-weight: 600; color: var(--text-muted); padding: 0.2rem 0; user-select: none;">
+              ℹ️ Opciones de inicio de sesión y ayuda
+            </summary>
+            <div style="margin-top: 0.4rem; padding: 0.5rem 0.7rem; background: var(--bg-app); border: 1px solid var(--border-light); border-radius: var(--radius-sm); line-height: 1.45; color: var(--text-main);">
+              <ul style="margin: 0; padding-left: 1.1rem;">
+                <li><b>Google Identity (Popup):</b> Requiere que el dominio esté en los <i>Orígenes autorizados de JavaScript</i> en Google Cloud Console.</li>
+                <li><b>Acceso Directo Google:</b> Permite ingresar con tu correo corporativo sin bloqueos de dominio.</li>
+                <li><b>Acceso Rápido por Rol:</b> Haz clic en cualquier tarjeta de rol superior con contraseña <code>123</code>.</li>
+              </ul>
+            </div>
+          </details>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Header Bar -->
+  <header class="app-header">
+    <div class="header-brand">
+      <div class="brand-icon">🌐</div>
+      <div>
+        <h1 class="brand-name">Agentic Data Governance Hub</h1>
+        <p class="brand-sub">Knowledge Catalog • Dataplex • Cloud DLP • Multi-Cloud & Hybrid</p>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
+        <span id="gcp-header-badge" class="stat-metric-badge badge-blue" style="border: 1px solid var(--gcp-pastel-blue-border); font-weight: 700; cursor: pointer;" onclick="openGCPConfigModal()" title="Clic para configurar Proyecto GCP y Despliegue">☁️ GCP Project: agente-newyork (us-central1)</span>
+        <span class="stat-metric-badge badge-emerald" style="font-weight: 700;">⚡ GCP Real Execution</span>
+        <span class="stat-metric-badge badge-blue">● BigQuery</span>
+        <span id="mysql-header-badge" class="stat-metric-badge badge-amber">● MySQL Online (No Conectado)</span>
+        <span id="postgres-header-badge" class="stat-metric-badge badge-amber">● Cloud SQL PostgreSQL (No Conectado)</span>
+      </div>
+
+      <!-- User Identity Card -->
+      <div class="user-identity-card" id="header-user-card" style="display: none;">
+        <span class="user-avatar-small" id="header-user-avatar">🛡️</span>
+        <div>
+          <div class="user-name-small" id="header-user-name">Lucía Morales</div>
+          <span class="user-role-badge badge-blue" id="header-user-role">Data Steward</span>
+        </div>
+        <button class="btn-logout" onclick="logoutUser()" title="Cerrar Sesión">🚪 Salir</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Role Workspace Banner -->
+  <section class="role-workspace-banner">
+    <div class="role-banner-left">
+      <div class="role-banner-avatar" id="role-banner-avatar">🛡️</div>
+      <div>
+        <h2 class="role-banner-title" id="role-banner-title">Espacio de Trabajo</h2>
+        <p class="role-banner-mission" id="role-banner-mission">🎯 Misión del Rol de Gobierno.</p>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 0.5rem; align-items: center;">
+      <button class="btn-secondary" onclick="logoutUser()" style="font-size: 0.8rem;">👥 Cambiar de Rol</button>
+    </div>
+  </section>
+
+  <!-- Mobile Navigation Bar Toggle (Shown on responsive tablet/mobile screens) -->
+  <div class="mobile-nav-toggle-bar">
+    <button type="button" class="mobile-nav-toggle-btn" onclick="toggleMobileSidebar()" id="mobile-sidebar-toggle" aria-label="Abrir Menú de Navegación">
+      <span class="hamburger-icon">☰</span>
+      <span id="mobile-active-tab-name">Menú de Navegación</span>
+    </button>
+    <span class="mobile-role-pill" id="mobile-role-pill">🛡️ Data Steward</span>
+  </div>
+
+  <!-- Mobile Sidebar Backdrop Overlay -->
+  <div id="sidebar-backdrop" class="sidebar-backdrop" onclick="closeMobileSidebar()"></div>
+
+  <!-- Workspace Layout: Left Sidebar Menu + Right Content Panes -->
+  <div class="workspace-layout">
+    <div class="workspace-container">
+      <!-- Left Sidebar: Menu Options for Governance Roles -->
+      <aside class="workspace-sidebar" id="workspace-sidebar">
+        <div class="sidebar-header-card">
+          <div class="sidebar-role-badge">
+            <span class="sidebar-role-avatar" id="sidebar-role-avatar">🛡️</span>
+            <div style="min-width: 0;">
+              <div class="sidebar-role-label">Perfil de Gobierno</div>
+              <div class="sidebar-role-title" id="sidebar-role-title">Data Steward</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Role-Tailored Navigation Tabs Bar -->
+        <nav class="nav-tabs-bar" id="nav-tabs-bar" aria-label="Opciones de Menú de Gobierno">
+          <!-- Tabs injected strictly according to authenticated role by auth.js -->
+        </nav>
+
+        <!-- Sidebar Multi-Cloud Connectivity Card (GCP & Onpremise Connected / AWS & Azure Disabled) -->
+        <div class="sidebar-cloud-status-card">
+          <div class="sidebar-cloud-title">
+            <span>🌐 Conectividad de Fuentes</span>
+          </div>
+          <div class="sidebar-cloud-list">
+            <div class="cloud-status-item active" title="Conexión activa a Google Cloud BigQuery & Dataplex">
+              <div style="display: flex; align-items: center;">
+                <span class="cloud-status-dot green"></span>
+                <span class="cloud-status-name">☁️ GCP BigQuery</span>
+              </div>
+              <span class="cloud-status-badge badge-green">Conectado</span>
+            </div>
+            <div class="cloud-status-item active" title="Conexión activa a On-Premises MySQL / Cloud SQL Postgres">
+              <div style="display: flex; align-items: center;">
+                <span class="cloud-status-dot green"></span>
+                <span class="cloud-status-name">🏢 On-Premises (SQL)</span>
+              </div>
+              <span class="cloud-status-badge badge-green">Conectado</span>
+            </div>
+            <div class="cloud-status-item disabled" title="AWS deshabilitado. Actualmente solo se han conectado GCP y On-Premise.">
+              <div style="display: flex; align-items: center;">
+                <span class="cloud-status-dot gray"></span>
+                <span class="cloud-status-name">🔶 AWS (Redshift/S3)</span>
+              </div>
+              <span class="cloud-status-badge badge-gray">Deshabilitado</span>
+            </div>
+            <div class="cloud-status-item disabled" title="Azure deshabilitado. Actualmente solo se han conectado GCP y On-Premise.">
+              <div style="display: flex; align-items: center;">
+                <span class="cloud-status-dot gray"></span>
+                <span class="cloud-status-name">🔷 Azure (Synapse)</span>
+              </div>
+              <span class="cloud-status-badge badge-gray">Deshabilitado</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="workspace-main-content">
+
+    <!-- 1. CHAT WORKSPACE PANE (ALL ROLES) -->
+    <section id="pane-chat" class="tab-content-pane active">
+      <div class="chat-workspace-grid">
+        <div class="chat-box-card">
+          <div class="chat-box-header">
+            <div style="font-size: 0.88rem; font-weight: 700; color: var(--text-main);">Asistente Inteligente de Gobierno</div>
+            <span class="stat-metric-badge badge-emerald">● Motor Agéntico Activo</span>
+          </div>
+
+          <div class="chat-history" id="chat-history-container">
+            <!-- Messages dynamically injected -->
+          </div>
+
+          <div class="chat-input-footer">
+            <div class="quick-prompts-scroller" id="quick-prompts-container">
+              <!-- Prompts injected by chat.js according to role -->
+            </div>
+
+            <div class="input-container">
+              <input type="text" id="chat-input" class="form-input" style="flex: 1;" placeholder="Pregunta sobre calidad, linaje, PII, ROI o solicita acciones...">
+              <button id="chat-send-btn" class="btn-send">
+                <span>Consultar 🚀</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat Sidebar -->
+        <aside class="chat-sidebar-card">
+          <div>
+            <div class="sidebar-section-title">Reglas de Gobernanza</div>
+            <div style="background: var(--pastel-amber-bg); border: 1px solid var(--pastel-amber-border); padding: 0.75rem; border-radius: var(--radius-md);">
+              <strong style="color: var(--pastel-amber-text); font-size: 0.82rem;">🔒 Regla de Oro (Zero PII Exposure)</strong>
+              <p style="color: var(--text-main); font-size: 0.75rem; margin-top: 0.2rem;">NUNCA se exponen datos reales sensibles. Solo se opera con metadatos, tags DLP y enmascaramiento dinámico.</p>
+            </div>
+          </div>
+
+          <div>
+            <div class="sidebar-section-title">Estructura en 6 Pasos</div>
+            <ol style="font-size: 0.76rem; color: var(--text-muted); padding-left: 1.1rem; line-height: 1.6;">
+              <li>📌 Resumen Ejecutivo</li>
+              <li>📍 Ubicación Multi-Cloud</li>
+              <li>🔒 Sensibilidad (DLP)</li>
+              <li>🩺 Calidad (Dataplex)</li>
+              <li>🔗 Linaje Rápido</li>
+              <li>💡 Siguiente Paso / SQL / RACI</li>
+            </ol>
+          </div>
+
+          <div>
+            <div class="sidebar-section-title">Dominios Activos</div>
+            <div class="domains-list-mini" id="domains-list-mini">
+              <!-- Rendered by stewards.js -->
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 2. CDO ROI & BUSINESS VALUE PANE (PERFIL 1: ESTRATEGA EJECUTIVO) -->
+    <section id="pane-cdo-roi" class="tab-content-pane">
+      <div style="margin-bottom: 1.25rem;">
+        <h2 style="font-size: 1.2rem; font-weight: 700;">💼 Tablero de Valor, ROI & Impacto Financiero de Datos</h2>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">Vista exclusiva para el <strong>CDO y la Alta Dirección</strong> para monetizar y proteger los activos de la empresa.</p>
+      </div>
+
+      <div class="card-grid" style="margin-bottom: 1.5rem;">
+        <div class="pastel-card" style="border-top: 3px solid var(--pastel-blue-accent);">
+          <span class="stat-metric-badge badge-blue">RETORNO DE INVERSIÓN (ROI)</span>
+          <div style="font-size: 1.8rem; font-weight: 800; color: var(--text-main);">340% ROI</div>
+          <p style="font-size: 0.8rem; color: var(--text-muted);">Ahorro estimado en costos de inacción y reducción de retrabajo de datos.</p>
+        </div>
+
+        <div class="pastel-card" style="border-top: 3px solid var(--pastel-emerald-accent);">
+          <span class="stat-metric-badge badge-emerald">EFICIENCIA DE CALIDAD</span>
+          <div style="font-size: 1.8rem; font-weight: 800; color: var(--text-main);">$185,000 USD</div>
+          <p style="font-size: 0.8rem; color: var(--text-muted);">Pérdidas prevenidas al asegurar calidad >95% en tablas de facturación y clientes.</p>
+        </div>
+
+        <div class="pastel-card" style="border-top: 3px solid var(--pastel-rose-accent);">
+          <span class="stat-metric-badge badge-rose">RIESGO DE MULTAS MITIGADO</span>
+          <div style="font-size: 1.8rem; font-weight: 800; color: var(--text-main);">100% Blindado</div>
+          <p style="font-size: 0.8rem; color: var(--text-muted);">Protección de PII con Cloud DLP y Dynamic Data Masking en BigQuery.</p>
+        </div>
+      </div>
+
+      <div class="pastel-card">
+        <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem;">Dominios de Negocio & Asignación Estratégica</h3>
+        <div class="domains-grid" id="cdo-domains-grid">
+          <!-- Rendered by stewards.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 2A. MÓDULO AGENTE BIGQUERY STUDIO (PERFIL: ADMINISTRADOR DEL BILLING) -->
+    <section id="pane-billing-agent" class="tab-content-pane">
+      <!-- Encabezado del Módulo Agente -->
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+            <span style="font-size: 1.6rem;">🤖</span>
+            <h2 style="font-size: 1.3rem; font-weight: 700; color: var(--text-main); margin: 0;">Agente BigQuery Studio • Facturación y FinOps</h2>
+            <div id="billing-agent-status-badge">
+              <span class="stat-metric-badge badge-green" style="background: var(--gcp-pastel-green-bg); color: var(--gcp-pastel-green-text); border: 1px solid var(--gcp-pastel-green-border); font-weight: 700;">🟢 Agente en Línea • BigQuery Studio</span>
+            </div>
+            <span class="stat-metric-badge badge-blue" style="background: var(--gcp-pastel-blue-bg); color: var(--gcp-pastel-blue-text); border: 1px solid var(--gcp-pastel-blue-border); font-weight: 700;">⚡ Gemini Data Analytics API</span>
+          </div>
+          <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.35rem; margin-bottom: 0;">
+            Chatea con el agente autónomo de BigQuery configurado para auditar costos, generar consultas SQL en vivo y responder preguntas financieras de Google Cloud.
+          </p>
+        </div>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button type="button" class="btn-secondary" onclick="clearBillingAgentChat()" style="background: var(--gcp-pastel-red-bg); border-color: var(--gcp-pastel-red-border); color: var(--gcp-pastel-red-text); font-size: 0.8rem; font-weight: 600;">
+            🧹 Limpiar Chat
+          </button>
+          <button type="button" class="btn-secondary" onclick="initBillingAgent()" style="background: var(--gcp-pastel-blue-bg); border-color: var(--gcp-pastel-blue-border); color: var(--gcp-pastel-blue-text); font-size: 0.8rem; font-weight: 600;">
+            🔄 Actualizar Agente
+          </button>
+        </div>
+      </div>
+
+      <!-- Tarjeta Informativa de Metadatos del Agente (Google Cloud & Pastel Colors) -->
+      <div class="pastel-card" style="background: #ffffff; border: 1px solid var(--border-light); border-left: 4px solid var(--gcp-blue); padding: 1rem 1.25rem; margin-bottom: 1.25rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.6rem;">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span style="font-size: 1.1rem;">📊</span>
+            <strong style="font-size: 0.85rem; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px;">Identidad & Conectividad del Agente</strong>
+          </div>
+          <div id="billing-agent-meta-info">
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; font-size: 0.78rem;">
+              <span class="stat-metric-badge badge-blue" style="background: var(--gcp-pastel-blue-bg); color: var(--gcp-pastel-blue-text); border: 1px solid var(--gcp-pastel-blue-border);">
+                🤖 ID: <code>agent_d74dd4e9-e294-4834-9b6d-a00fff8f0950</code>
+              </span>
+              <span class="stat-metric-badge badge-amber" style="background: var(--gcp-pastel-yellow-bg); color: var(--gcp-pastel-yellow-text); border: 1px solid var(--gcp-pastel-yellow-border);">
+                ☁️ Proyecto: <strong>gobiernodatos</strong> (us)
+              </span>
+              <span class="stat-metric-badge badge-emerald" style="background: var(--gcp-pastel-green-bg); color: var(--gcp-pastel-green-text); border: 1px solid var(--gcp-pastel-green-border);">
+                📊 Tablas BQ: <strong>2 Conectadas</strong>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; border-top: 1px dashed var(--border-light); padding-top: 0.5rem;">
+          <strong>Tablas BigQuery Vinculadas al Agente:</strong>
+          <span style="display: inline-block; background: var(--bg-subtle); padding: 0.15rem 0.4rem; border-radius: 4px; font-family: monospace; font-size: 0.76rem; color: var(--text-main); margin-right: 0.4rem;">
+            gobiernodatos.facturacion.gcp_billing_export_resource_v1_01D79A_F04D6B_3B368E
+          </span>
+          <span style="display: inline-block; background: var(--bg-subtle); padding: 0.15rem 0.4rem; border-radius: 4px; font-family: monospace; font-size: 0.76rem; color: var(--text-main);">
+            gobiernodatos.gcp_billing_immutable_01D79A_F04D6B_3B368E_us.gcp_billing_export_focus_01D79A_F04D6B_3B368E
+          </span>
+        </div>
+      </div>
+
+      <!-- Barra de Preguntas Frecuentes y Prompts Rápidos (Google Cloud Pastel Theme) -->
+      <div style="margin-bottom: 1.25rem;">
+        <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 0.35rem;">
+          <span>💡</span> Preguntas Rápidas para el Administrador de Billing:
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.45rem;">
+          <button type="button" class="billing-agent-chip chip-btn" data-prompt="¿Cuáles son los 5 servicios con mayor costo facturado en BigQuery?" style="background: var(--gcp-pastel-blue-bg); color: var(--gcp-pastel-blue-text); border: 1px solid var(--gcp-pastel-blue-border); font-size: 0.8rem; font-weight: 600; padding: 0.4rem 0.9rem; border-radius: 20px; cursor: pointer; transition: all 0.2s ease;">
+            📊 Top 5 Servicios más costosos
+          </button>
+          <button type="button" class="billing-agent-chip chip-btn" data-prompt="¿Cuáles son los proyectos de GCP con mayor gasto este mes?" style="background: var(--gcp-pastel-yellow-bg); color: var(--gcp-pastel-yellow-text); border: 1px solid var(--gcp-pastel-yellow-border); font-size: 0.8rem; font-weight: 600; padding: 0.4rem 0.9rem; border-radius: 20px; cursor: pointer; transition: all 0.2s ease;">
+            🏢 Proyectos con mayor consumo
+          </button>
+          <button type="button" class="billing-agent-chip chip-btn" data-prompt="¿Cuál es la tendencia diaria de costos de Cloud Storage en el último mes?" style="background: var(--gcp-pastel-green-bg); color: var(--gcp-pastel-green-text); border: 1px solid var(--gcp-pastel-green-border); font-size: 0.8rem; font-weight: 600; padding: 0.4rem 0.9rem; border-radius: 20px; cursor: pointer; transition: all 0.2s ease;">
+            📈 Tendencia Cloud Storage
+          </button>
+          <button type="button" class="billing-agent-chip chip-btn" data-prompt="¿Qué porcentaje de costo está cubierto por créditos para cada proyecto?" style="background: var(--gcp-pastel-red-bg); color: var(--gcp-pastel-red-text); border: 1px solid var(--gcp-pastel-red-border); font-size: 0.8rem; font-weight: 600; padding: 0.4rem 0.9rem; border-radius: 20px; cursor: pointer; transition: all 0.2s ease;">
+            💳 Cobertura de Créditos y Ahorros
+          </button>
+          <button type="button" class="billing-agent-chip chip-btn" data-prompt="¿Cuáles son los 5 recursos más costosos en la región us-east1?" style="background: var(--pastel-purple-bg); color: var(--pastel-purple-text); border: 1px solid var(--pastel-purple-border); font-size: 0.8rem; font-weight: 600; padding: 0.4rem 0.9rem; border-radius: 20px; cursor: pointer; transition: all 0.2s ease;">
+            ⚡ Top Recursos en us-east1
+          </button>
+          <button type="button" class="billing-agent-chip chip-btn" data-prompt="¿Qué servicios tuvieron el mayor crecimiento de costo mes a mes?" style="background: var(--gcp-pastel-blue-bg); color: var(--gcp-pastel-blue-text); border: 1px solid var(--gcp-pastel-blue-border); font-size: 0.8rem; font-weight: 600; padding: 0.4rem 0.9rem; border-radius: 20px; cursor: pointer; transition: all 0.2s ease;">
+            📉 Crecimiento de Costo MoM
+          </button>
+        </div>
+      </div>
+
+      <!-- Contenedor Principal del Chat Agéntico -->
+      <div class="pastel-card" style="background: #ffffff; border: 1px solid var(--border-light); border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.04); display: flex; flex-direction: column; height: 680px;">
+        <!-- Historial de Mensajes con Scroll -->
+        <div id="billing-agent-chat-messages" style="flex: 1; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column;">
+          <!-- Mensaje de Bienvenida del Agente -->
+          <div class="msg-row agent" style="display: flex; gap: 0.75rem; justify-content: flex-start; margin-bottom: 1.5rem;">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: var(--gcp-pastel-blue-bg); border: 1px solid var(--gcp-pastel-blue-border); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; box-shadow: 0 2px 6px rgba(66, 133, 244, 0.15);">
+              🤖
+            </div>
+            <div class="msg-bubble-card" style="background: #ffffff; border: 1px solid var(--border-light); border-left: 4px solid var(--gcp-blue); border-radius: 2px 12px 12px 12px; padding: 1.25rem; max-width: 85%; box-shadow: 0 4px 12px rgba(0,0,0,0.04);">
+              <div style="font-size: 0.75rem; color: var(--gcp-pastel-blue-text); font-weight: 700; margin-bottom: 0.35rem; display: flex; align-items: center; justify-content: space-between;">
+                <span>🤖 Agente de BigQuery Studio • agente-facturacion</span>
+                <span class="stat-metric-badge badge-green" style="background: var(--gcp-pastel-green-bg); color: var(--gcp-pastel-green-text); font-size: 0.7rem;">Conectado a BigQuery</span>
+              </div>
+              <p style="margin: 0; font-size: 0.9rem; color: var(--text-main); line-height: 1.5;">
+                ¡Hola Carlos! Soy tu <strong>Agente Especializado de BigQuery para Facturación y FinOps</strong> (ID: <code>agent_d74dd4e9-e294-4834-9b6d-a00fff8f0950</code>).
+              </p>
+              <p style="margin-top: 0.4rem; font-size: 0.82rem; color: var(--text-muted); line-height: 1.5;">
+                Tengo acceso directo y en vivo a las tablas oficiales de exportación de billing en Google Cloud:
+                <br>• <code>gobiernodatos.facturacion.gcp_billing_export_resource_v1_01D79A_F04D6B_3B368E</code>
+                <br>• <code>gobiernodatos.gcp_billing_immutable_01D79A_F04D6B_3B368E_us.gcp_billing_export_focus_01D79A_F04D6B_3B368E</code>
+              </p>
+              <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-main); font-weight: 600;">
+                Puedes hacerme cualquier pregunta sobre consumo, costos por servicio, proyectos, créditos o tendencias en lenguaje natural.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Barra de Entrada de Mensaje (Multiline + Google Cloud Pastel Style) -->
+        <div style="border-top: 1px solid var(--border-light); padding: 1rem 1.25rem; background: var(--bg-app); border-radius: 0 0 12px 12px;">
+          <div style="display: flex; gap: 0.75rem; align-items: flex-end;">
+            <div style="flex: 1; position: relative;">
+              <textarea 
+                id="billing-agent-input" 
+                rows="1" 
+                placeholder="Escribe tu consulta analítica sobre la facturación de BigQuery... (Presiona Enter para enviar, Shift+Enter para salto)" 
+                style="width: 100%; resize: none; min-height: 44px; max-height: 160px; padding: 0.7rem 0.9rem; font-size: 0.9rem; font-family: inherit; color: var(--text-main); background: #ffffff; border: 1.5px solid var(--border-light); border-radius: 10px; outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease; box-sizing: border-box;"
+                onfocus="this.style.borderColor='var(--gcp-blue)'; this.style.boxShadow='0 0 0 3px rgba(66, 133, 244, 0.15)';"
+                onblur="this.style.borderColor='var(--border-light)'; this.style.boxShadow='none';"
+              ></textarea>
+            </div>
+            <button 
+              type="button" 
+              id="billing-agent-send-btn" 
+              class="btn-primary" 
+              style="background: var(--gcp-blue); border-color: var(--gcp-blue); color: #ffffff; font-weight: 700; height: 44px; padding: 0 1.25rem; border-radius: 10px; display: flex; align-items: center; gap: 0.4rem; cursor: pointer; transition: all 0.2s ease; flex-shrink: 0; box-shadow: 0 2px 6px rgba(66, 133, 244, 0.25);"
+            >
+              <span>Preguntar</span>
+              <span>🚀</span>
+            </button>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.4rem; font-size: 0.72rem; color: var(--text-muted);">
+            <span>⚡ Ejecutado en BigQuery con Gemini Data Analytics • Datos actualizados en tiempo real</span>
+            <span>Atajo: <code>Enter</code> enviar • <code>Shift+Enter</code> nueva línea</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         SECCIONES EN CONSTRUCCIÓN (PERFIL ADMINISTRADOR DEL BILLING)
+         ========================================================================== -->
+
+    <!-- SECCIÓN EN CONSTRUCCIÓN: CONTROL DE CUOTAS Y LÍMITES -->
+    <section id="pane-under-construction-quotas" class="tab-content-pane">
+      <div class="pastel-card" style="background: linear-gradient(180deg, var(--gcp-pastel-yellow-bg) 0%, #ffffff 100%); border: 1px solid var(--gcp-pastel-yellow-border); border-radius: 16px; padding: 3.5rem 2rem; text-align: center; max-width: 820px; margin: 2rem auto; box-shadow: 0 4px 24px rgba(0,0,0,0.04);">
+        <div style="width: 76px; height: 76px; border-radius: 20px; background: #ffffff; border: 1px solid var(--gcp-pastel-yellow-border); display: flex; align-items: center; justify-content: center; font-size: 2.6rem; margin: 0 auto 1.25rem; box-shadow: 0 4px 14px rgba(251, 188, 4, 0.16);">
+          ⚡
+        </div>
+        <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: var(--gcp-pastel-yellow-bg); border: 1px solid var(--gcp-pastel-yellow-border); padding: 0.35rem 0.95rem; border-radius: 20px; font-size: 0.76rem; font-weight: 700; color: var(--gcp-pastel-yellow-text); margin-bottom: 1.15rem;">
+          <span>🚧</span> MÓDULO EN CONSTRUCCIÓN
+        </div>
+        <h2 style="font-size: 1.55rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.65rem;">
+          Control de Cuotas y Límites
+        </h2>
+        <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; max-width: 620px; margin: 0 auto 1.85rem;">
+          Estamos trabajando en la integración con las APIs de cuotas en tiempo real de Google Cloud y la automatización de flujos de solicitud de incremento. Puedes solicitar información de cuotas de cómputo y consumo directamente al Agente.
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem; margin-bottom: 2.25rem; text-align: left;">
+          <div style="background: var(--gcp-pastel-yellow-bg); border: 1px solid var(--gcp-pastel-yellow-border); border-radius: 12px; padding: 1.1rem;">
+            <div style="font-size: 0.78rem; font-weight: 700; color: var(--gcp-pastel-yellow-text); margin-bottom: 0.35rem;">⚡ Cuotas Cloud v2</div>
+            <div style="font-size: 0.82rem; color: var(--text-main); line-height: 1.45;">Monitoreo en tiempo real de límites por región.</div>
+          </div>
+          <div style="background: var(--gcp-pastel-blue-bg); border: 1px solid var(--gcp-pastel-blue-border); border-radius: 12px; padding: 1.1rem;">
+            <div style="font-size: 0.78rem; font-weight: 700; color: var(--gcp-pastel-blue-text); margin-bottom: 0.35rem;">🔔 Alertas Proactivas</div>
+            <div style="font-size: 0.82rem; color: var(--text-main); line-height: 1.45;">Notificaciones automáticas en umbrales >80%.</div>
+          </div>
+        </div>
+
+        <button type="button" class="btn-primary" onclick="switchToBillingAgentTab()" style="background: linear-gradient(135deg, var(--gcp-blue) 0%, #1a73e8 100%); color: #ffffff; border: none; padding: 0.85rem 1.85rem; border-radius: 10px; font-weight: 700; font-size: 0.95rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.6rem; box-shadow: 0 4px 14px rgba(66, 133, 244, 0.3); transition: all 0.2s ease;">
+          <span>🤖</span> Consultar al Agente de BigQuery
+          <span>➔</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 2B. BILLING & FINOPS DASHBOARD (PERFIL 5: ADMINISTRADOR DEL BILLING) -->
+    <section id="pane-billing" class="tab-content-pane">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+            <span style="font-size: 1.5rem;">💳</span>
+            <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--text-main);">Facturación Real Google Cloud & Análisis FinOps</h2>
+            <span class="stat-metric-badge badge-blue" id="billing-account-badge">Argolis Billing (anitaquevedo) [01D79A-F04D6B-3B368E]</span>
+            <span class="stat-metric-badge badge-emerald" id="billing-source-badge">⚡ BigQuery Live Export (2026-08)</span>
+          </div>
+          <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">
+            Reporte oficial en vivo sobre la tabla <code style="font-size: 0.75rem; background: var(--bg-subtle); padding: 0.1rem 0.3rem; border-radius: 4px;">gobiernodatos.facturacion.gcp_billing_export_v1_01D79A_F04D6B_3B368E</code> con métricas reales de Google Cloud Console.
+          </p>
+        </div>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button type="button" class="btn-secondary" onclick="seedRealBillingData()" style="background: var(--pastel-blue-bg); border-color: var(--pastel-blue-border); color: var(--pastel-blue-text); font-weight: 700;">
+            📥 Cargar Datos Reales en BQ
+          </button>
+          <button type="button" class="btn-secondary" onclick="syncBillingToFirestore()" style="background: var(--pastel-emerald-bg); border-color: var(--pastel-emerald-border); color: var(--pastel-emerald-text);">
+            💾 Sincronizar en Firestore
+          </button>
+          <button type="button" class="btn-secondary" onclick="openBudgetModal()">
+            ⚙️ Ajustar Presupuesto
+          </button>
+          <button type="button" class="btn-primary" onclick="initBilling()">
+            🔄 Actualizar BigQuery
+          </button>
+        </div>
+      </div>
+
+      <!-- BARRA DE AGRUPACIÓN Y FILTROS EN TIEMPO REAL (GOOGLE CLOUD & PASTEL) -->
+      <div class="pastel-card" style="margin-bottom: 1.25rem; border-left: 4px solid var(--gcp-blue);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div style="display: flex; align-items: center; gap: 0.4rem;">
+            <strong style="font-size: 0.85rem; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px;">🔀 Agrupar Consumo Por:</strong>
+          </div>
+          <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;" id="billing-group-buttons">
+            <button type="button" class="quota-filter-btn active" data-group="service" onclick="setBillingGroupBy('service', this)">
+              ⚙️ Por Servicio (Console)
+            </button>
+            <button type="button" class="quota-filter-btn" data-group="project" onclick="setBillingGroupBy('project', this)">
+              🏢 Por Proyecto
+            </button>
+            <button type="button" class="quota-filter-btn" data-group="project_and_service" onclick="setBillingGroupBy('project_and_service', this)">
+              🔀 Proyecto + Servicio
+            </button>
+            <button type="button" class="quota-filter-btn" data-group="month" onclick="setBillingGroupBy('month', this)">
+              📅 Por Mes
+            </button>
+            <button type="button" class="quota-filter-btn" data-group="sku" onclick="setBillingGroupBy('sku', this)">
+              🏷️ Por SKU / Recurso
+            </button>
+          </div>
+        </div>
+
+        <!-- FILTROS COMBINADOS -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; align-items: flex-end; padding-top: 0.75rem; border-top: 1px dashed var(--border-light);">
+          <div>
+            <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">
+              📆 Periodo de Facturación:
+            </label>
+            <select id="billing-filter-month" class="form-input" style="padding: 0.35rem 0.6rem; font-size: 0.82rem;" onchange="triggerBillingFilterChange()">
+              <option value="202608" selected>Agosto 2026 (Mes Actual)</option>
+              <option value="202607">Julio 2026 (Mes Anterior)</option>
+              <option value="202606">Junio 2026</option>
+              <option value="all">Todos los Meses</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">
+              ☁️ Filtrar Servicio GCP:
+            </label>
+            <select id="billing-filter-service" class="form-input" style="padding: 0.35rem 0.6rem; font-size: 0.82rem;" onchange="triggerBillingFilterChange()">
+              <option value="all">Todos los Servicios (27)</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">
+              📁 Filtrar Proyecto GCP:
+            </label>
+            <select id="billing-filter-project" class="form-input" style="padding: 0.35rem 0.6rem; font-size: 0.82rem;" onchange="triggerBillingFilterChange()">
+              <option value="all">Todos los Proyectos (11)</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">
+              🔍 Búsqueda Rápida:
+            </label>
+            <input type="text" id="billing-filter-search" class="form-input" placeholder="Buscar servicio, proyecto o SKU..." style="padding: 0.35rem 0.6rem; font-size: 0.82rem;" oninput="triggerBillingSearchDebounced()">
+          </div>
+
+          <div style="display: flex; gap: 0.4rem;">
+            <button type="button" class="btn-secondary" style="padding: 0.4rem 0.75rem; font-size: 0.78rem; width: 100%;" onclick="resetBillingFilters()">
+              ✕ Limpiar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 KPI CARDS DINÁMICAS (PASTEL GOOGLE CLOUD) -->
+      <div class="card-grid" style="margin-bottom: 1.25rem;">
+        <div class="pastel-card" style="border-top: 3px solid var(--gcp-blue);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="stat-metric-badge badge-blue">SUBTOTAL FACTURADO</span>
+            <span style="font-size: 1.2rem;">💰</span>
+          </div>
+          <div id="billing-kpi-total-cost" style="font-size: 1.75rem; font-weight: 800; color: var(--text-main); margin-top: 0.25rem;">$1,073.65 USD</div>
+          <div id="billing-kpi-total-sub" style="font-size: 0.76rem; color: var(--text-muted); margin-top: 0.2rem;">Costo neto con créditos aplicados</div>
+        </div>
+
+        <div class="pastel-card" style="border-top: 3px solid var(--gcp-green);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="stat-metric-badge badge-emerald">PRESUPUESTO OBJETIVO</span>
+            <span style="font-size: 1.2rem;">🎯</span>
+          </div>
+          <div id="billing-kpi-budget" style="font-size: 1.75rem; font-weight: 800; color: var(--text-main); margin-top: 0.25rem;">$1,500.00 USD</div>
+          <div id="billing-kpi-budget-sub" style="font-size: 0.76rem; color: var(--pastel-emerald-text); font-weight: 600; margin-top: 0.2rem;">🟢 71.6% Consumo - Saludable</div>
+        </div>
+
+        <div class="pastel-card" style="border-top: 3px solid var(--gcp-yellow);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="stat-metric-badge badge-amber">SERVICIOS AUDITADOS</span>
+            <span style="font-size: 1.2rem;">⚙️</span>
+          </div>
+          <div id="billing-kpi-records" style="font-size: 1.75rem; font-weight: 800; color: var(--text-main); margin-top: 0.25rem;">27 Servicios</div>
+          <div id="billing-kpi-records-sub" style="font-size: 0.76rem; color: var(--text-muted); margin-top: 0.2rem;">Usage Cost: $1,097.21 | Ahorros: -$23.56</div>
+        </div>
+
+        <div class="pastel-card" style="border-top: 3px solid var(--gcp-red);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="stat-metric-badge badge-rose">PROYECCIÓN FIN DE MES</span>
+            <span style="font-size: 1.2rem;">📈</span>
+          </div>
+          <div id="billing-kpi-savings" style="font-size: 1.75rem; font-weight: 800; color: var(--pastel-blue-text); margin-top: 0.25rem;">$1,285.00 USD</div>
+          <div style="font-size: 0.76rem; color: var(--text-muted); margin-top: 0.2rem;">Forecast Agosto (Aug 1 - Aug 31)</div>
+        </div>
+      </div>
+
+      <!-- CRONOGRAMA DIARIO DE CONSUMOS (SERVICES - THIS MONTH: AUG 1 TO AUG 31) -->
+      <div class="pastel-card" style="margin-bottom: 1.25rem; border-top: 3px solid var(--gcp-blue);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem;">
+              <span>📊</span> Services – this month (Aug 1 – Aug 31)
+            </h3>
+            <span style="font-size: 0.76rem; color: var(--text-muted);">
+              Distribución cronológica diaria del gasto y costo proyectado por servicio de Google Cloud
+            </span>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <span class="stat-metric-badge badge-emerald" style="font-size: 0.72rem;">Forecasted cost: ~$1,285.00</span>
+            <button type="button" class="btn-secondary" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;" onclick="downloadBillingCSV()">
+              📥 Download CSV
+            </button>
+          </div>
+        </div>
+
+        <div id="billing-timeline-chart-container" style="min-height: 140px; padding: 0.5rem 0;">
+          <!-- Rendered dynamically by billing.js -->
+        </div>
+      </div>
+
+      <!-- TABLA OFICIAL GOOGLE CLOUD BILLING REPORTS -->
+      <div class="pastel-card" style="margin-bottom: 1.25rem; overflow-x: auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <h3 id="billing-table-title" style="font-size: 1rem; font-weight: 700; color: var(--text-main);">
+              Desglose de Facturación por Servicio de Google Cloud (Agosto 2026)
+            </h3>
+            <span id="billing-table-subtitle" style="font-size: 0.78rem; color: var(--text-muted);">
+              Reporte idéntico a Google Cloud Console Billing Reports (Argolis Billing - anitaquevedo)
+            </span>
+          </div>
+          <div style="display: flex; gap: 0.4rem; align-items: center;">
+            <span id="billing-rows-count-badge" class="stat-metric-badge badge-blue">27 Servicios</span>
+            <button type="button" class="btn-secondary" style="font-size: 0.72rem; padding: 0.2rem 0.5rem;" onclick="downloadBillingCSV()">
+              📥 Exportar CSV
+            </button>
+          </div>
+        </div>
+
+        <div id="billing-analytics-table-container">
+          <!-- Rendered dynamically by billing.js -->
+        </div>
+      </div>
+
+      <!-- CONSOLA DE CONSULTAS SQL EN VIVO (GOOGLE CLOUD BILLING SQL STUDIO) -->
+      <div class="pastel-card" style="margin-bottom: 1.25rem; border-top: 3px solid var(--gcp-blue);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.85rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+              <span style="font-size: 1.25rem;">💻</span>
+              <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--text-main);">
+                Consola de Consultas SQL de Facturación BigQuery
+              </h3>
+              <span class="stat-metric-badge badge-blue">Standard SQL</span>
+              <a href="https://docs.cloud.google.com/billing/docs/how-to/bq-examples#sum-costs-per-invoice" target="_blank" rel="noopener noreferrer" class="stat-metric-badge badge-emerald" style="text-decoration: none;">
+                📖 Documentación Oficial GCP ↗
+              </a>
+            </div>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem;">
+              Ejecuta consultas analíticas sobre la tabla exportada de facturación deduciendo créditos, calculando totales exactos por factura y analizando etiquetas FinOps.
+            </p>
+          </div>
+          
+          <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
+            <select id="billing-query-templates-select" class="form-input" style="font-size: 0.78rem; padding: 0.35rem 0.6rem; max-width: 330px;" onchange="loadSelectedBillingTemplate()">
+              <option value="">-- Cargar Plantilla Oficial GCP --</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- EDITOR SQL -->
+        <div style="position: relative; margin-bottom: 0.75rem;">
+          <textarea id="billing-sql-editor" rows="7" class="form-input" style="font-family: 'JetBrains Mono', Consolas, monospace; font-size: 0.82rem; line-height: 1.45; background: #1e1e2e; color: #a6adc8; border-color: var(--border-light); border-radius: var(--radius-sm); resize: vertical;" spellcheck="false" placeholder="Escribe tu consulta SQL aquí..."></textarea>
+        </div>
+
+        <!-- BARRA DE ACCIÓN DEL QUERY RUNNER -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;">
+          <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+            <button type="button" class="btn-primary" style="background: var(--gcp-blue); border-color: var(--gcp-blue);" onclick="executeBillingCustomQuery()">
+              <span>🚀 Ejecutar en BigQuery</span>
+            </button>
+            <button type="button" class="btn-secondary" onclick="dryRunBillingCustomQuery()">
+              ⚡ Validar (Dry Run)
+            </button>
+            <button type="button" class="btn-secondary" onclick="copyBillingSQL()">
+              📋 Copiar SQL
+            </button>
+          </div>
+
+          <div id="billing-query-meta-badge" style="font-size: 0.75rem; color: var(--text-muted); display: flex; gap: 0.5rem; align-items: center;">
+            <!-- Muestra tiempo de ejecución y bytes procesados -->
+          </div>
+        </div>
+
+        <!-- CONTENEDOR DE RESULTADOS DE LA CONSULTA SQL -->
+        <div id="billing-query-results-container" style="display: none; border-top: 1px dashed var(--border-light); padding-top: 0.75rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
+            <strong id="billing-query-results-title" style="font-size: 0.85rem; color: var(--text-main);">Resultados de la Consulta:</strong>
+            <button type="button" class="btn-secondary" style="font-size: 0.72rem; padding: 0.2rem 0.5rem;" onclick="exportBillingQueryCSV()">
+              📥 Exportar CSV
+            </button>
+          </div>
+          <div id="billing-query-table-box" style="overflow-x: auto; max-height: 380px;">
+            <!-- Table rendered by billing.js -->
+          </div>
+        </div>
+      </div>
+
+      <!-- RECOMENDACIONES FINOPS DE AHORRO -->
+      <div class="pastel-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <div>
+            <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-main);">💡 Recomendaciones FinOps de Optimización de Costos</h3>
+            <p style="font-size: 0.78rem; color: var(--text-muted);">Acciones detectadas para reducir el gasto de proyectos GCP sin afectar disponibilidad.</p>
+          </div>
+        </div>
+        <div id="billing-recommendations-list">
+          <!-- Rendered by billing.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 2C. GCP QUOTAS & LIMITS MONITOR PANE -->
+    <section id="pane-quotas" class="tab-content-pane">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span style="font-size: 1.5rem;">⚡</span>
+            <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--text-main);">Control de Cuotas & Límites de Consumo GCP</h2>
+            <span class="stat-metric-badge badge-blue" id="quotas-total-badge">7 Cuotas Rastreadas</span>
+            <span class="stat-metric-badge badge-amber" id="quotas-warning-badge">2 En Advertencia</span>
+            <span class="stat-metric-badge badge-rose" id="quotas-critical-badge">1 Crítica</span>
+          </div>
+          <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">
+            Monitorea en tiempo real la saturación de APIs, núcleos vCPU, memoria y límites diarios para prevenir errores de cuota saturada.
+          </p>
+        </div>
+        <button type="button" class="btn-primary" onclick="initQuotas()">
+          🔄 Refrescar Cuotas
+        </button>
+      </div>
+
+      <!-- Filtro de Cuotas por Servicio -->
+      <div style="display: flex; gap: 0.5rem; margin-bottom: 1.25rem; flex-wrap: wrap;">
+        <button type="button" class="btn-secondary quota-filter-btn active" onclick="setQuotasFilter('all', this)">
+          Todos los Servicios
+        </button>
+        <button type="button" class="btn-secondary quota-filter-btn" onclick="setQuotasFilter('BigQuery', this)">
+          BigQuery
+        </button>
+        <button type="button" class="btn-secondary quota-filter-btn" onclick="setQuotasFilter('Compute Engine', this)">
+          Compute Engine
+        </button>
+        <button type="button" class="btn-secondary quota-filter-btn" onclick="setQuotasFilter('Vertex AI', this)">
+          Vertex AI
+        </button>
+        <button type="button" class="btn-secondary quota-filter-btn" onclick="setQuotasFilter('Cloud DLP', this)">
+          Cloud DLP (SDP)
+        </button>
+        <button type="button" class="btn-secondary quota-filter-btn" onclick="setQuotasFilter('Cloud Storage', this)">
+          Cloud Storage
+        </button>
+      </div>
+
+      <!-- Cuotas Grid -->
+      <div id="quotas-cards-container" class="card-grid">
+        <!-- Rendered by billing.js -->
+      </div>
+    </section>
+
+    <!-- 3. MATURITY & SPRINTS PANE (PERFIL 2: GESTOR DEL PROGRAMA) -->
+    <section id="pane-maturity" class="tab-content-pane">
+      <div class="pastel-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+          <div>
+            <h3 style="font-size: 1.15rem; font-weight: 700;">📋 Diagnóstico de Madurez de Gobierno (DMM) & Roadmap Ágil</h3>
+            <p style="font-size: 0.82rem; color: var(--text-muted);">Evalúa la madurez de la empresa y genera automáticamente el plan de trabajo por Sprints.</p>
+          </div>
+          <button class="btn-primary" onclick="runMaturityAssessment()">🚀 Evaluar Madurez & Generar Roadmap</button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+          <div>
+            <label style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600; display: block; margin-bottom: 0.3rem;">1. Inventario & Catálogo:</label>
+            <select id="mat-q1" class="form-input" style="width: 100%; font-size: 0.82rem;">
+              <option value="1">1 - Sin inventario formal</option>
+              <option value="2">2 - Inventario en Excel</option>
+              <option value="3" selected>3 - Knowledge Catalog conectado</option>
+              <option value="4">4 - Catálogo activo automatizado</option>
+              <option value="5">5 - Data Mesh federado</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600; display: block; margin-bottom: 0.3rem;">2. Calidad de Datos (Dataplex):</label>
+            <select id="mat-q2" class="form-input" style="width: 100%; font-size: 0.82rem;">
+              <option value="1">1 - Sin validación</option>
+              <option value="2">2 - Validaciones manuales</option>
+              <option value="3" selected>3 - Reglas automáticas en Dataplex</option>
+              <option value="4">4 - Alertas y auto-remediación</option>
+              <option value="5">5 - SLAs garantizados con IA</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600; display: block; margin-bottom: 0.3rem;">3. Protección de PII (Cloud DLP):</label>
+            <select id="mat-q3" class="form-input" style="width: 100%; font-size: 0.82rem;">
+              <option value="1">1 - PII expuesta sin control</option>
+              <option value="2" selected>2 - Escaneo ocasional</option>
+              <option value="3">3 - Dynamic Masking en BigQuery</option>
+              <option value="4">4 - Clasificación continua DLP</option>
+              <option value="5">5 - Cero confianza / Homomórfico</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600; display: block; margin-bottom: 0.3rem;">4. Adopción de IA & RAG:</label>
+            <select id="mat-q4" class="form-input" style="width: 100%; font-size: 0.82rem;">
+              <option value="1">1 - No se utiliza IA</option>
+              <option value="2">2 - Pruebas no gobernadas</option>
+              <option value="3" selected>3 - Datasets certificados para RAG</option>
+              <option value="4">4 - Agentes autónomos gobernados</option>
+              <option value="5">5 - Soberanía total de modelos</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="maturity-results-container">
+          <!-- Rendered on button click -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. RACI MATRIX & COMMITTEES PANE (PERFIL 2: GESTOR DEL PROGRAMA) -->
+    <section id="pane-raci" class="tab-content-pane">
+      <div style="margin-bottom: 1.25rem;">
+        <h2 style="font-size: 1.2rem; font-weight: 700;">👥 Estructura Organizativa, Matriz RACI & Comités de Gobierno</h2>
+        <p style="font-size: 0.82rem; color: var(--text-muted);">Definición formal de responsabilidades (Responsible, Accountable, Consulted, Informed).</p>
+      </div>
+
+      <div class="pastel-card">
+        <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem;">Matriz RACI Oficial por Dominio</h3>
+        <div style="overflow-x: auto;">
+          <table class="table-clean">
+            <thead>
+              <tr>
+                <th>Proceso / Iniciativa de Gobierno</th>
+                <th>CDO (Estratega)</th>
+                <th>Agile Lead (Gestor)</th>
+                <th>Data Steward (Guardián)</th>
+                <th>Data Architect (Ingeniero)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Definición de Políticas y Estrategia</strong></td>
+                <td><span class="stat-metric-badge badge-blue">Accountable (A)</span></td>
+                <td><span class="stat-metric-badge badge-purple">Responsible (R)</span></td>
+                <td><span class="stat-metric-badge badge-emerald">Consulted (C)</span></td>
+                <td><span class="stat-metric-badge badge-amber">Informed (I)</span></td>
+              </tr>
+              <tr>
+                <td><strong>Glosario de Negocio & Calidad Dataplex</strong></td>
+                <td><span class="stat-metric-badge badge-blue">Informed (I)</span></td>
+                <td><span class="stat-metric-badge badge-purple">Consulted (C)</span></td>
+                <td><span class="stat-metric-badge badge-emerald">Accountable (A)</span></td>
+                <td><span class="stat-metric-badge badge-amber">Responsible (R)</span></td>
+              </tr>
+              <tr>
+                <td><strong>Protección DLP & Dynamic Data Masking</strong></td>
+                <td><span class="stat-metric-badge badge-blue">Consulted (C)</span></td>
+                <td><span class="stat-metric-badge badge-purple">Informed (I)</span></td>
+                <td><span class="stat-metric-badge badge-emerald">Responsible (R)</span></td>
+                <td><span class="stat-metric-badge badge-amber">Accountable (A)</span></td>
+              </tr>
+              <tr>
+                <td><strong>Certificación de Datasets para Modelos RAG</strong></td>
+                <td><span class="stat-metric-badge badge-blue">Accountable (A)</span></td>
+                <td><span class="stat-metric-badge badge-purple">Responsible (R)</span></td>
+                <td><span class="stat-metric-badge badge-emerald">Responsible (R)</span></td>
+                <td><span class="stat-metric-badge badge-amber">Consulted (C)</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. DATAPLEX QUALITY & ADVANCED BUSINESS RULES PANE (PERFIL 3: GUARDIÁN DEL DATO) -->
+    <section id="pane-quality" class="tab-content-pane">
+      <!-- TARJETA DESTACADA: 7 DIMENSIONES DE CALIDAD DE DATOS (MDM) -->
+      <div class="pastel-card" style="margin-bottom: 1.25rem; border-top: 3px solid var(--pastel-blue-accent);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;">
+          <div>
+            <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-main);">🎯 Framework de Dimensiones de Calidad de Datos (MDM / Multi-Cloud)</h3>
+            <p style="font-size: 0.78rem; color: var(--text-muted);">
+              Estándar de medición configurado por el <strong>Data Steward</strong> / <strong>Gestor de Gobierno</strong> para análisis del Agente en todas las fuentes conectadas.
+            </p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <button class="btn-primary" style="font-size: 0.76rem; padding: 0.4rem 0.8rem;" onclick="toggleAddDimensionForm()">➕ Incorporar Dimensión</button>
+            <span id="quality-dimensions-count-badge" class="stat-metric-badge badge-blue">7 Dimensiones Activas</span>
+          </div>
+        </div>
+
+        <!-- FORMULARIO PARA AGREGAR NUEVAS DIMENSIONES -->
+        <div id="add-dimension-form-container" style="display: none; background: var(--bg-subtle); border: 1px solid var(--border-light); padding: 0.85rem; border-radius: var(--radius-sm); margin-bottom: 0.75rem;">
+          <h4 style="font-size: 0.85rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-main);">➕ Incorporar Nueva Dimensión de Calidad (Data Steward / Gestor)</h4>
+          <div style="display: grid; grid-template-columns: 1fr 1.5fr 1.5fr 100px; gap: 0.5rem;">
+            <input type="text" id="new-dim-name" class="form-input" placeholder="Nombre Dimensión (ej: Conformidad)" style="font-size: 0.78rem;">
+            <input type="text" id="new-dim-def" class="form-input" placeholder="Definición de negocio" style="font-size: 0.78rem;">
+            <input type="text" id="new-dim-mdm" class="form-input" placeholder="Ejemplo de Regla MDM" style="font-size: 0.78rem;">
+            <button class="btn-primary" style="font-size: 0.75rem;" onclick="submitNewQualityDimension()">Guardar</button>
+          </div>
+        </div>
+
+        <div id="quality-dimensions-framework-container" style="overflow-x: auto;">
+          <!-- Injected by quality.js -->
+        </div>
+
+      </div>
+
+      <!-- SECCIÓN: SELECTOR & PANEL DE CONTROL DE CALIDAD POR ORIGEN (FULL WIDTH) -->
+      <div class="pastel-card" style="margin-bottom: 1.25rem; border-top: 4px solid var(--pastel-blue-accent); padding: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.85rem;">
+          <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <div style="font-size: 1.5rem; background: var(--pastel-blue-bg); width: 42px; height: 42px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; border: 1px solid var(--pastel-blue-border);">🎯</div>
+            <div>
+              <label for="quality-asset-select" style="font-size: 0.95rem; font-weight: 700; color: var(--text-main); margin: 0; display: block;">
+                Seleccionar Tabla / Fuente Conectada para Inspección:
+              </label>
+              <div style="font-size: 0.76rem; color: var(--text-muted); margin-top: 0.1rem;">
+                Ejecuta escaneos de calidad Dataplex, validación de reglas MDM y perfilado en vivo agrupados por motor de origen.
+              </div>
+            </div>
+          </div>
+          
+          <div id="quality-origin-pills" style="display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center;">
+            <!-- Filter Pills Injected by quality.js -->
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 300px; position: relative;">
+            <select id="quality-asset-select" onchange="onQualityAssetSelectChange(this.value)" class="form-input" style="width: 100%; font-weight: 600; font-size: 0.88rem; padding: 0.65rem 0.85rem; border-radius: var(--radius-md); border: 1.5px solid var(--pastel-blue-border); background-color: #ffffff; color: var(--text-main); box-shadow: var(--shadow-sm);">
+              <!-- Injected with <optgroup> by quality.js -->
+            </select>
+          </div>
+          <span id="quality-asset-origin-badge" class="stat-metric-badge badge-blue" style="font-size: 0.82rem; padding: 0.5rem 0.85rem; font-weight: 700; border-radius: 8px;">☁️ GCP BigQuery</span>
+        </div>
+      </div>
+
+      <!-- MAIN RESULTS & ALERTS GRID -->
+      <div style="display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 1.25rem; align-items: start;">
+        <div id="quality-results-container" style="min-width: 0;">
+          <!-- Quality Results by quality.js -->
+        </div>
+
+        <aside class="pastel-card" style="padding: 1.1rem;">
+          <div class="sidebar-section-title" style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem;">
+            <span>⚠️ Alertas Dataplex (&lt;90%)</span>
+          </div>
+          <div id="quality-alerts-container">
+            <!-- Alerts by quality.js -->
+          </div>
+        </aside>
+      </div>
+
+      <!-- SECCIÓN: REGLAS DE NEGOCIO AVANZADAS & DRILL-DOWN (ANOMALÍAS EN VENTAS) -->
+      <div class="pastel-card" style="margin-top: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <h3 style="font-size: 1.1rem; font-weight: 700;">📊 Reglas de Calidad de Negocio Avanzadas (Drill-Down & Umbrales Dinámicos)</h3>
+            <p style="font-size: 0.78rem; color: var(--text-muted);">
+              Detección de variaciones anormales en volumen de ventas, conciliación financiera y SLAs con umbrales configurables en tiempo real.
+            </p>
+          </div>
+          <button class="btn-primary" onclick="triggerEvaluateBusinessRules()">🚀 Evaluar Reglas de Negocio</button>
+        </div>
+
+        <div style="overflow-x: auto; margin-top: 0.75rem;">
+          <table class="table-clean">
+            <thead>
+              <tr>
+                <th>Regla de Negocio</th>
+                <th>Categoría</th>
+                <th>Umbral Dinámico Configurable</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="business-rules-list-container">
+              <!-- Rendered by quality.js -->
+            </tbody>
+          </table>
+        </div>
+
+        <div id="business-rules-results-container">
+          <!-- Drill-down results rendered on evaluation -->
+        </div>
+      </div>
+
+      <!-- Live Dataplex Scans from GCP Console -->
+      <div class="pastel-card" style="margin-top: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <h3 style="font-size: 1.05rem; font-weight: 700;">Escaneos Registrados en Google Cloud Dataplex (Console)</h3>
+            <p style="font-size: 0.78rem; color: var(--text-muted);">Data Profile & Quality Scans en <code>projects/agentspace-demos-466121/locations/us-central1</code>.</p>
+          </div>
+          <button class="btn-secondary" onclick="loadRealDataplexConsoleScans()">🔄 Refrescar desde GCP</button>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table class="table-clean">
+            <thead>
+              <tr>
+                <th>Nombre del Escaneo en GCP</th>
+                <th>Tipo</th>
+                <th>Tabla BigQuery</th>
+                <th>Estado en GCP</th>
+              </tr>
+            </thead>
+            <tbody id="real-dataplex-scans-table">
+              <!-- Injected by quality.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. SENSITIVE DATA PROTECTION (CLOUD DLP / SDP SUITE MULTI-ROL) -->
+    <section id="pane-dlp" class="tab-content-pane">
+      <div style="text-align: center; color: var(--text-muted); padding: 3rem;">
+        <em>Cargando suite integral de Sensitive Data Protection (Discovery, Inspección, Risk Analysis & Políticas)...</em>
+      </div>
+    </section>
+
+    <!-- 7. STEWARDS & GLOSSARY PANE (PERFIL 3: GUARDIÁN DEL DATO) -->
+    <section id="pane-stewards" class="tab-content-pane">
+      <div style="margin-bottom: 1.25rem;">
+        <h2 style="font-size: 1.2rem; font-weight: 700;">Certificación de Datasets para IA Generativa & RAG</h2>
+        <p style="font-size: 0.82rem; color: var(--text-muted);">Garantiza que ningún modelo fundacional o agente acceda a datos sin enmascarar o no certificados.</p>
+      </div>
+
+      <div class="card-grid" id="ai-readiness-grid">
+        <!-- AI Readiness cards by stewards.js -->
+      </div>
+    </section>
+
+    <!-- 8. LINEAGE PANE (PERFIL 4: ARQUITECTO E INGENIERO) -->
+    <section id="pane-lineage" class="tab-content-pane">
+      <div style="margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+        <div style="display: flex; gap: 0.75rem; align-items: center;">
+          <label for="lineage-asset-select" style="font-size: 0.85rem; font-weight: 600;">Seleccionar Activo:</label>
+          <select id="lineage-asset-select" onchange="renderLineageForAsset(this.value)" class="form-input" style="min-width: 300px;">
+            <!-- Options injected by JS -->
+          </select>
+        </div>
+        <button class="btn-secondary" onclick="triggerSimulateSchemaChange()">⚡ Simular Cambio de Esquema</button>
+      </div>
+
+      <div class="pastel-card" id="lineage-graph-container">
+        <!-- SVG Lineage Injected by lineage.js -->
+      </div>
+    </section>
+
+    <!-- 9. CONNECTORS & EXTERNAL DATABASE DISCOVERY WIZARD PANE (PERFIL 4: ARQUITECTO) -->
+    <section id="pane-connectors" class="tab-content-pane">
+      <div style="margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+        <div>
+          <h2 style="font-size: 1.2rem; font-weight: 700;">🔌 Conectores & Descubrimiento Automatizado Multi-Cloud</h2>
+          <p style="font-size: 0.82rem; color: var(--text-muted);">
+            Conexión en vivo a bases de datos externas (MySQL Online / FreeMySQLDatabase, Azure SQL, PostgreSQL), profiling e indexación en Knowledge Catalog.
+          </p>
+        </div>
+        <button class="btn-secondary" onclick="loadConnectorsStatus()">🔄 Refrescar Conectores</button>
+      </div>
+
+      <!-- EXTERNAL DATABASE CONNECTION & DISCOVERY WIZARD -->
+      <div class="pastel-card" style="margin-bottom: 1.5rem; border-top: 3px solid var(--pastel-blue-accent);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+          <h3 style="font-size: 1.05rem; font-weight: 700;">🌐 Asistente de Conexión & Indexación de BD Externa (MySQL / Cloud SQL PostgreSQL)</h3>
+          <div style="display: flex; gap: 0.4rem;">
+            <button class="btn-secondary" style="font-size: 0.75rem;" onclick="fillMySQLPreset('mysql')">⚡ Preset MySQL Aiven</button>
+            <button class="btn-secondary" style="font-size: 0.75rem;" onclick="fillMySQLPreset('postgres')">⚡ Preset Cloud SQL PostgreSQL</button>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1.1rem;">
+          
+          <!-- COL 1: Engine & Host -->
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <div>
+              <label class="form-label" for="ext-engine" style="font-weight: 700; color: var(--text-main);">Motor de Base de Datos:</label>
+              <select id="ext-engine" class="form-input" style="width: 100%; font-weight: 700; color: var(--pastel-blue-text); background: var(--pastel-blue-bg);" onchange="onEngineChange()">
+                <option value="mysql">🐬 MySQL Online (Puerto 10283 / 3306)</option>
+                <option value="postgres">🐘 Google Cloud SQL PostgreSQL (Puerto 5432)</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label" for="ext-host" style="font-weight: 700; color: var(--text-main);">Host / IP / Nombre Conexión GCP:</label>
+              <input type="text" id="ext-host" class="form-input" style="width: 100%; font-family: monospace; font-size: 0.84rem;" value="" placeholder="ej. 34.71.91.85 ó agentspace-demos-466121:us-central1:postgresql-example">
+            </div>
+          </div>
+
+          <!-- COL 2: Puerto, DB, User, Pass & Schema -->
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <div style="display: grid; grid-template-columns: 1fr 1.5fr 1.5fr; gap: 0.75rem;">
+              <div>
+                <label class="form-label" for="ext-port" style="font-weight: 700; color: var(--text-main);">Puerto:</label>
+                <input type="number" id="ext-port" class="form-input" style="width: 100%; text-align: center; font-family: monospace;" value="" placeholder="5432 / 10283">
+              </div>
+              <div>
+                <label class="form-label" for="ext-db" style="font-weight: 700; color: var(--text-main);">Base de Datos:</label>
+                <input type="text" id="ext-db" class="form-input" style="width: 100%;" value="" placeholder="ej. bdanita / postgres">
+              </div>
+              <div>
+                <label class="form-label" for="ext-schema" style="font-weight: 700; color: var(--text-main);">Esquema(s) / Schema(s):</label>
+                <input type="text" id="ext-schema" class="form-input" style="width: 100%; font-family: monospace; font-size: 0.82rem;" value="public" placeholder="ej. public ó sistemas ó *">
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+              <div>
+                <label class="form-label" for="ext-user" style="font-weight: 700; color: var(--text-main);">Usuario:</label>
+                <input type="text" id="ext-user" class="form-input" style="width: 100%;" value="" placeholder="ej. postgres / avnadmin">
+              </div>
+              <div>
+                <label class="form-label" for="ext-pass" style="font-weight: 700; color: var(--text-main);">Contraseña:</label>
+                <input type="password" id="ext-pass" class="form-input" style="width: 100%;" value="" placeholder="••••••••">
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- TABLA ESPECÍFICA FILTER & CSV UPLOAD -->
+        <div style="background: var(--bg-app); border: 1px solid var(--border-light); padding: 0.9rem; border-radius: var(--radius-md); margin-bottom: 1rem;">
+          <div style="font-size: 0.82rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.35rem;">
+            🎯 Selección Específica de Tablas a Gobernar (Filtro por Lista o CSV):
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 280px; gap: 0.75rem;">
+            <div>
+              <label class="form-label" for="ext-tables">Lista de Tablas Separadas por Coma (o vacío para todas):</label>
+              <input type="text" id="ext-tables" class="form-input" style="width: 100%;" value="" placeholder="ej. clientes, ventas, productos (o vacío para descubrir todas)">
+            </div>
+            <div>
+              <label class="form-label" for="ext-csv-file">O Cargar Archivo CSV con Tablas:</label>
+              <input type="file" id="ext-csv-file" accept=".csv,.txt" class="form-input" style="width: 100%; font-size: 0.75rem; padding: 0.35rem;">
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <button class="btn-secondary" onclick="testExternalConnection()">🔌 Probar Conexión en Vivo</button>
+          <button class="btn-primary" onclick="triggerExternalDiscovery()">🚀 Ejecutar Descubrimiento Automatizado, Linaje & Profiling</button>
+        </div>
+
+        <div id="discovery-results-container">
+          <!-- Rendered by connectors.js on discovery -->
+        </div>
+      </div>
+
+      <!-- CONECTORES STATUS GRID -->
+      <div class="card-grid" id="connectors-grid">
+        <!-- Connectors Cards by connectors.js -->
+      </div>
+    </section>
+
+    <!-- 10. LOOKER SEMANTIC LAYER & METRIC GOVERNANCE PANE -->
+    <section id="pane-looker" class="tab-content-pane">
+      <div style="margin-bottom: 1.25rem;">
+        <h2 style="font-size: 1.2rem; font-weight: 700;">📊 Gobernanza Semántica de Looker & Catálogo de Métricas de Negocio</h2>
+        <p style="font-size: 0.82rem; color: var(--text-muted);">
+          Gobernanza oficial de métricas (MRR, Margen, Churn, CAC), dimensiones LookML y linaje hacia tableros ejecutivos y agentes de IA.
+        </p>
+      </div>
+
+      <div class="card-grid" id="looker-metrics-grid">
+        <!-- Rendered by looker.js -->
+      </div>
+    </section>
+
+    <!-- 11. POLICY AS CODE & KNOWLEDGE CATALOG MCP ENGINE PANE -->
+    <section id="pane-policies" class="tab-content-pane">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+        <div>
+          <h2 style="font-size: 1.2rem; font-weight: 700;">📜 Policy as Code & Knowledge Catalog MCP Engine</h2>
+          <p style="font-size: 0.82rem; color: var(--text-muted);">
+            Gestión, generación con IA, ejecución y auto-remediación de políticas de gobierno sobre metadatos de GCP Dataplex y BigQuery.
+          </p>
+        </div>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button class="btn-primary" onclick="triggerExecutePoliciesSuite()">🚀 Ejecutar Suite de Políticas</button>
+          <button class="btn-secondary" onclick="exportViolationsToCSV()">📥 Exportar Reporte (CSV)</button>
+        </div>
+      </div>
+
+      <!-- Compliance Scorecard -->
+      <div id="compliance-scorecard-container">
+        <!-- Rendered by policies.js -->
+      </div>
+
+      <!-- Natural Language Policy Generator -->
+      <div class="pastel-card" style="margin-bottom: 1.25rem;">
+        <h3 style="font-size: 1rem; font-weight: 700;">✨ Generador de Políticas con IA (Natural Language to Policy as Code)</h3>
+        <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.65rem;">
+          Escribe la condición que deseas auditar en lenguaje natural. El agente de Knowledge Catalog generará la especificación YAML y activará la regla automáticamente.
+        </p>
+        <div style="display: flex; gap: 0.6rem;">
+          <input type="text" id="policy-prompt-input" class="form-input" style="flex: 1;" placeholder="Ej: Auditar que todas las tablas de finanzas tengan calidad Dataplex > 95% y Data Steward asignado">
+          <button class="btn-primary" onclick="triggerGeneratePolicyFromPrompt()">⚡ Generar & Desplegar Política</button>
+        </div>
+      </div>
+
+      <!-- Active Violations & 1-Click Remediation -->
+      <div class="pastel-card" style="margin-bottom: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <h3 style="font-size: 1rem; font-weight: 700;">⚠️ Violaciones Detectadas & Auto-Remediación Instantánea</h3>
+          <span class="stat-metric-badge badge-rose">Auditoría en Vivo</span>
+        </div>
+        <div id="violations-container">
+          <!-- Rendered by policies.js -->
+        </div>
+      </div>
+
+      <!-- Active Policies Registry -->
+      <div class="pastel-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <h3 style="font-size: 1rem; font-weight: 700;">📋 Catálogo de Políticas Versionadas en Knowledge Catalog</h3>
+          <span class="stat-metric-badge badge-blue">Policy Store</span>
+        </div>
+        <div style="overflow-x: auto;">
+          <table class="table-clean">
+            <thead>
+              <tr>
+                <th>Nombre de la Política & Descripción</th>
+                <th>Categoría</th>
+                <th>Severidad</th>
+                <th>Versión</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="policies-table-body">
+              <!-- Rendered by policies.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12. CATALOG PANE (ESQUEMAS TÉCNICOS & QUERIES / GLOBAL) -->
+    <section id="pane-catalog" class="tab-content-pane">
+      <!-- HEADER BANNER: ESQUEMAS TÉCNICOS & QUERIES -->
+      <div class="pastel-card" style="margin-bottom: 1.25rem; border-top: 4px solid var(--gcp-blue);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.6rem;">
+              <span style="font-size: 1.4rem; background: var(--gcp-pastel-blue-bg); padding: 0.4rem; border-radius: var(--radius-md); border: 1px solid var(--gcp-pastel-blue-border);">⚡</span>
+              <div>
+                <h2 style="font-size: 1.2rem; font-weight: 700; color: var(--text-main); margin: 0;">Esquemas Técnicos & Queries (Knowledge Catalog)</h2>
+                <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.15rem;">
+                  Metadatos DDL, consultas SQL optimizadas (Golden Queries), tags DLP y perfiles de calidad de fuentes conectadas.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.35rem; flex-wrap: wrap; align-items: center;">
+            <span class="stat-metric-badge badge-emerald" title="Google Cloud BigQuery Conectado">● GCP BigQuery (Conectado)</span>
+            <span class="stat-metric-badge badge-emerald" title="On-Premises MySQL / Postgres Conectado">● On-Premises (Conectado)</span>
+            <span class="stat-metric-badge badge-gray" style="opacity: 0.65; cursor: not-allowed;" title="AWS Deshabilitado">🔒 AWS Redshift (Deshabilitado)</span>
+            <span class="stat-metric-badge badge-gray" style="opacity: 0.65; cursor: not-allowed;" title="Azure Deshabilitado">🔒 Azure Synapse (Deshabilitado)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- FILTER CONTROLS (CLOUD SELECTOR WITH AWS & AZURE DISABLED) -->
+      <div class="pastel-card" style="margin-bottom: 1.25rem; padding: 1rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.65rem;">
+          <strong style="font-size: 0.85rem; color: var(--text-main);">🔍 Filtrar por Nube / Motor de Origen:</strong>
+          <div style="font-size: 0.72rem; color: var(--text-muted);">
+            <em>Fuentes activas: Google Cloud Platform y On-Premises (MySQL / Cloud SQL Postgres)</em>
+          </div>
+        </div>
+
+        <!-- Visual Cloud Filter Pills (AWS & Azure Disabled) -->
+        <div class="cloud-pills-filter-bar" style="display: flex; gap: 0.45rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.85rem;">
+          <button type="button" class="catalog-cloud-pill active" data-cloud="all" onclick="selectCatalogCloudFilter('all', this)">
+            <span>🌟 Todas Conectadas (GCP & On-Prem)</span>
+          </button>
+          <button type="button" class="catalog-cloud-pill" data-cloud="GCP" onclick="selectCatalogCloudFilter('GCP', this)">
+            <span>☁️ Google Cloud (BigQuery)</span>
+          </button>
+          <button type="button" class="catalog-cloud-pill" data-cloud="On-Premises" onclick="selectCatalogCloudFilter('On-Premises', this)">
+            <span>🏢 On-Premises (MySQL / Postgres)</span>
+          </button>
+          <button type="button" class="catalog-cloud-pill disabled-pill" data-cloud="AWS" onclick="handleDisabledCloudClick('AWS')" title="Opción deshabilitada: Actualmente solo hemos conectado GCP y On-Premise">
+            <span>🔒 🔶 AWS Redshift (Deshabilitado)</span>
+          </button>
+          <button type="button" class="catalog-cloud-pill disabled-pill" data-cloud="Azure" onclick="handleDisabledCloudClick('Azure')" title="Opción deshabilitada: Actualmente solo hemos conectado GCP y On-Premise">
+            <span>🔒 🔷 Azure Synapse (Deshabilitado)</span>
+          </button>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center;">
+          <div style="flex: 1; min-width: 250px;">
+            <input type="text" id="catalog-search-input" class="form-input" style="width: 100%;" placeholder="🔍 Buscar por tabla, columna, descripción o dominio...">
+          </div>
+          <select id="filter-cloud" class="form-input" style="min-width: 230px;" onchange="onCatalogCloudSelectChange(this.value)">
+            <option value="all">🌟 Todas las Conectadas (GCP & On-Prem)</option>
+            <option value="GCP">☁️ Google Cloud Platform [Conectado]</option>
+            <option value="On-Premises">🏢 On-Premises (MySQL / Postgres) [Conectado]</option>
+            <option value="AWS" disabled style="color: #94a3b8; background: #f8fafc;">🔶 Amazon Web Services (AWS) [🔒 Deshabilitado]</option>
+            <option value="Azure" disabled style="color: #94a3b8; background: #f8fafc;">🔷 Microsoft Azure [🔒 Deshabilitado]</option>
+          </select>
+          <select id="filter-domain" class="form-input" style="min-width: 170px;" onchange="onCatalogDomainSelectChange(this.value)">
+            <option value="all">Todos los Dominios</option>
+            <option value="clientes">Clientes y Fidelización</option>
+            <option value="finanzas">Finanzas y Facturación</option>
+            <option value="operaciones">Operaciones y Logística</option>
+            <option value="ventas">Ventas y Omnicanalidad</option>
+          </select>
+          <button class="btn-primary" onclick="openCreateTermModal()">+ Glosario</button>
+        </div>
+      </div>
+
+      <div class="card-grid" id="assets-grid">
+        <!-- Asset Cards Rendered by catalog.js -->
+      </div>
+    </section>
+
+    <!-- 13. METADATA MANAGEMENT & TAGGING PANE (KNOWLEDGE CATALOG & SDP) -->
+    <section id="pane-tagging" class="tab-content-pane">
+      <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.25rem; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+        <div style="flex: 1; min-width: 280px;">
+          <label class="form-label" for="tagging-asset-select" style="font-weight: 700; color: var(--pastel-blue-text);">
+            🎯 Seleccionar Activo a Gobernar y Etiquetar (MySQL / BigQuery):
+          </label>
+          <select id="tagging-asset-select" class="form-input" style="width: 100%; font-weight: 600;" onchange="loadAssetTags(this.value)">
+            <!-- Asset options dynamically loaded -->
+          </select>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; align-items: flex-end;">
+          <button class="btn-secondary" onclick="document.getElementById('registered-tag-templates-modal').style.display='flex'">
+            📋 Ver Plantillas Registradas (Tag Templates)
+          </button>
+        </div>
+      </div>
+
+      <!-- Tagging Dynamic Content -->
+      <div id="tagging-content-container">
+        <!-- Injected by tagging.js -->
+      </div>
+    </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- MODAL: Ver Plantillas Registradas de Knowledge Catalog -->
+  <div id="registered-tag-templates-modal" class="modal-backdrop" style="display: none;">
+    <div class="modal-card" style="max-width: 680px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="color: var(--text-main); font-size: 1.15rem; font-weight: 700;">📋 Plantillas Oficiales de Knowledge Catalog (Tag Templates)</h3>
+        <button class="btn-secondary" onclick="closeAllModals()" style="padding: 0.2rem 0.5rem;">✕</button>
+      </div>
+      <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.35rem;">
+        Plantillas registradas en <code>projects/agentspace-demos-466121/locations/us-central1/tagTemplates</code>:
+      </p>
+
+      <div id="tag-templates-catalog-list" style="margin-top: 1rem; max-height: 380px; overflow-y: auto;">
+        <!-- Injected by tagging.js -->
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+        <button class="btn-primary" onclick="closeAllModals()">Entendido</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Editar Metadatos / Golden Query -->
+  <div id="metadata-modal" class="modal-backdrop" style="display: none;">
+    <div class="modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 id="modal-asset-title" style="color: var(--text-main); font-size: 1.15rem; font-weight: 700;">Editar Metadatos</h3>
+        <button class="btn-secondary" onclick="closeAllModals()" style="padding: 0.2rem 0.5rem;">✕</button>
+      </div>
+
+      <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.85rem;">
+        <input type="hidden" id="edit-asset-id">
+        <div>
+          <label style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600;">Ubicación Física:</label>
+          <div id="edit-asset-location" style="color: var(--pastel-blue-text); font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; margin-top: 0.2rem;"></div>
+        </div>
+
+        <div>
+          <label for="edit-asset-description" style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600;">Descripción Funcional / Técnica:</label>
+          <textarea id="edit-asset-description" rows="3" class="form-input" style="width: 100%; margin-top: 0.25rem;"></textarea>
+        </div>
+
+        <div>
+          <label for="edit-asset-steward" style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600;">Data Steward Responsable:</label>
+          <input type="text" id="edit-asset-steward" class="form-input" style="width: 100%; margin-top: 0.25rem;">
+        </div>
+
+        <div>
+          <label for="edit-asset-golden-query" style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600;">Golden Query Pre-Aprobada (SQL):</label>
+          <textarea id="edit-asset-golden-query" rows="3" class="form-input" style="width: 100%; font-family: 'JetBrains Mono', monospace; margin-top: 0.25rem;"></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 0.75rem;">
+          <button class="btn-secondary" onclick="closeAllModals()">Cancelar</button>
+          <button class="btn-primary" onclick="saveMetadataEdits()">💾 Guardar en Catálogo</button>
+        </div>
+  <!-- MODAL: Configurar Proyecto GCP y Despliegue Serverless (Google Cloud & Pastel UI) -->
+  <div id="gcp-config-modal" class="modal-backdrop" style="display: none;">
+    <div class="modal-card" style="max-width: 650px; border-top: 4px solid var(--gcp-pastel-blue-border);">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <span style="font-size: 1.4rem;">☁️</span>
+          <div>
+            <h3 style="color: var(--text-main); font-size: 1.15rem; font-weight: 700; margin: 0;">Configuración GCP & Despliegue Serverless</h3>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">Configura tu proyecto objetivo de GCP y despliega en 1 clic a Cloud Run o Cloud Functions.</p>
+          </div>
+        </div>
+        <button class="btn-secondary" onclick="closeAllModals()" style="padding: 0.2rem 0.5rem;">✕</button>
+      </div>
+
+      <div style="margin-top: 1.2rem; display: flex; flex-direction: column; gap: 1rem;">
+        <div>
+          <label style="color: var(--text-main); font-size: 0.82rem; font-weight: 700;">🎯 ID del Proyecto GCP Objetivo (Target Project ID):</label>
+          <input type="text" id="gcp-modal-project-id" class="form-input" style="width: 100%; font-family: 'JetBrains Mono', monospace; font-weight: 700; margin-top: 0.35rem;" placeholder="ej. gobiernodatos, agente-newyork">
+          
+          <div style="display: flex; gap: 0.4rem; margin-top: 0.5rem; flex-wrap: wrap; align-items: center;">
+            <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600;">Proyectos Rápidos:</span>
+            <button type="button" class="btn-secondary" style="padding: 0.15rem 0.45rem; font-size: 0.72rem;" onclick="setModalGCPProject('gobiernodatos')">gobiernodatos</button>
+            <button type="button" class="btn-secondary" style="padding: 0.15rem 0.45rem; font-size: 0.72rem;" onclick="setModalGCPProject('agente-newyork')">agente-newyork</button>
+            <button type="button" class="btn-secondary" style="padding: 0.15rem 0.45rem; font-size: 0.72rem;" onclick="setModalGCPProject('cmiagentes')">cmiagentes</button>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div>
+            <label style="color: var(--text-main); font-size: 0.82rem; font-weight: 700;">📍 Región GCP:</label>
+            <select id="gcp-modal-region" class="form-input" style="width: 100%; margin-top: 0.35rem;">
+              <option value="us-central1" selected>us-central1 (Iowa)</option>
+              <option value="us-east1">us-east1 (S. Carolina)</option>
+              <option value="southamerica-east1">southamerica-east1 (São Paulo)</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="color: var(--text-main); font-size: 0.82rem; font-weight: 700;">🚀 Destino de Despliegue:</label>
+            <select id="gcp-modal-deploy-target" class="form-input" style="width: 100%; margin-top: 0.35rem;">
+              <option value="cloud_function" selected>Cloud Run Functions (2nd Gen)</option>
+              <option value="cloud_run">Cloud Run Container App</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Terminal Output Log Container -->
+        <div id="gcp-deploy-console-box" style="display: none; background: #1e1e2e; color: #a6adc8; border-radius: var(--radius-sm); padding: 0.75rem; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; max-height: 180px; overflow-y: auto;">
+          <div style="color: var(--gcp-pastel-blue-border); font-weight: 700; margin-bottom: 0.35rem;">🖥️ Logs del Despliegue en Vivo:</div>
+          <pre id="gcp-deploy-console-text" style="margin: 0; white-space: pre-wrap; word-break: break-all;"></pre>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem;">
+          <button type="button" class="btn-secondary" onclick="saveGCPConfigOnly()">💾 Guardar Configuración</button>
+          <button type="button" class="btn-primary" style="background: var(--gcp-blue); border-color: var(--gcp-blue);" onclick="executeGCPDeploymentFromModal()">
+            <span>🚀 Desplegar en Google Cloud</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Solicitar Aumento de Cuota GCP -->
+  <div id="quota-increase-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-card" style="max-width: 500px;">
+      <div class="modal-header">
+        <h3 id="quota-modal-title" style="font-size: 1.1rem; font-weight: 700; color: var(--text-main);">Solicitud de Ampliación de Cuota GCP</h3>
+        <button type="button" class="btn-icon" onclick="closeQuotaModal()">✕</button>
+      </div>
+
+      <form id="quota-increase-form" onsubmit="submitQuotaIncreaseForm(event)" style="display: flex; flex-direction: column; gap: 0.9rem; margin-top: 0.75rem;">
+        <input type="hidden" id="quota-modal-id" value="">
+
+        <div style="background: var(--bg-subtle); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
+          <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Límite Actual Asignado:</div>
+          <div id="quota-modal-current-limit" style="font-size: 1.15rem; font-weight: 800; color: var(--text-main); margin-top: 0.2rem;">-</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="quota-modal-new-limit">Nuevo Límite Solicitado (<span id="quota-modal-unit-label">unidades</span>):</label>
+          <input type="number" id="quota-modal-new-limit" class="form-input" required min="1" step="any" placeholder="Ej: 15">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="quota-modal-justification">Justificación Operativa / Negocio:</label>
+          <textarea id="quota-modal-justification" class="form-input" rows="3" required placeholder="Explica la razón del incremento (ej. Ingesta masiva o nuevos modelos Vertex AI en producción)..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="quota-modal-email">Correo de Contacto FinOps / GCP Admin:</label>
+          <input type="email" id="quota-modal-email" class="form-input" value="billing@empresa.com" required>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.5rem;">
+          <button type="button" class="btn-secondary" onclick="closeQuotaModal()">Cancelar</button>
+          <button type="submit" class="btn-primary" style="background: var(--gcp-blue); border-color: var(--gcp-blue);">
+            <span>⚡ Enviar Solicitud a GCP</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Scripts con Cache-Busting Forzado v=30.0 -->
+  <script src="/js/app.js?v=30.0"></script>
+  <script src="/js/auth.js?v=30.0"></script>
+  <script src="/js/profiles.js?v=30.0"></script>
+  <script src="/js/chat.js?v=30.0"></script>
+  <script src="/js/catalog.js?v=30.0"></script>
+  <script src="/js/dlp.js?v=30.0"></script>
+  <script src="/js/quality.js?v=30.0"></script>
+  <script src="/js/lineage.js?v=30.0"></script>
+  <script src="/js/stewards.js?v=30.0"></script>
+  <script src="/js/connectors.js?v=30.0"></script>
+  <script src="/js/policies.js?v=30.0"></script>
+  <script src="/js/looker.js?v=30.0"></script>
+  <script src="/js/tagging.js?v=30.0"></script>
+  <script src="/js/billing.js?v=30.0"></script>
+  <script src="/js/billing_agent.js?v=30.0"></script>
+
+</body>
+</html>
